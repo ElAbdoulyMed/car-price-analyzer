@@ -15,8 +15,8 @@ NEWSPIDER_MODULE = "carcompare.spiders"
 
 ADDONS = {}
 
-MONGO_URI = "mongodb://localhost:27017"
-MONGO_DATABASE = "CarCompareDB"
+MONGO_URI = os.getenv("MONGO_URI")
+MONGO_DATABASE = os.getenv("MONGO_DATABASE")
 ITEM_PIPELINES = {
     "carcompare.pipelines.MongoDBPipeline": 300,
 }
