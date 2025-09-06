@@ -37,7 +37,7 @@ CarPriceAnalyzer/
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/ElAbdoulyMed/CarPriceAnalyzer.git
+git clone https://github.com/ElAbdoulyMed/car-price-analyzer.git
 cd CarPriceAnalyzer
 
 2. Clone the repository:
