@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pdb
+*.egg
+*.egg-info/
+*.dist-info/
+*.log
+*.sqlite3
+*.env
+*.venv
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Scrapy
+.scrapy/
+logs/
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.iml
+
+# Data / output (optional, if you don’t want to track scraped data)
+data/
+
+# Environment variables
+.env
