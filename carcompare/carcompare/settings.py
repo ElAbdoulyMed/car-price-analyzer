@@ -21,6 +21,13 @@ MONGO_DATABASE = os.getenv("MONGO_DATABASE")
 ITEM_PIPELINES = {
     "carcompare.pipelines.MongoDBPipeline": 300,
 }
+DOWNLOAD_HANDLERS = {
+    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+}
+TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
+PLAYWRIGHT_BROWSER_TYPE = "chromium"
+
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
