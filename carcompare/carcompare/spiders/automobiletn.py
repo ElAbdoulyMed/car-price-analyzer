@@ -1,7 +1,8 @@
 import scrapy
 
 class AutomobileTnSpider(scrapy.Spider):
-    name="cars"
+    name="automobiletn"
+    collection_to_use = "cars"
     def start_requests(self):
         start_url= "https://www.automobile.tn/fr/neuf"
         yield scrapy.Request(url=start_url,callback=self.parse)

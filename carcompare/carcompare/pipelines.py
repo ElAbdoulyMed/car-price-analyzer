@@ -33,7 +33,7 @@ class MongoDBPipeline:
 
     def process_item(self, item, spider):
         # insert into collection (spider name = collection name)
-        collection_name = spider.name  
+        collection_name = spider.collection_to_use  
         self.db[collection_name].insert_one(dict(item))
         return item
 
