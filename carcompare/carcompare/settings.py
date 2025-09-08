@@ -27,6 +27,35 @@ DOWNLOAD_HANDLERS = {
 }
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 PLAYWRIGHT_BROWSER_TYPE = "chromium"
+PLAYWRIGHT_LAUNCH_OPTIONS = {   # ADDED
+    "headless": True,           # Run browser without a GUI (faster, less memory)
+    "timeout": 30 * 1000,       # Max time (ms) to start the browser = 30s
+}
+# Configures how the Playwright browser is launched
+
+
+PLAYWRIGHT_DEFAULT_NAVIGATION_TIMEOUT = 30 * 1000  # ADDED
+# Max time (ms) Playwright waits for a page to load = 30s
+
+PLAYWRIGHT_MAX_CONTEXTS = 8  # ADDED - allow parallel browser contexts
+# How many browser contexts can exist at the same time (like isolated sessions)
+
+PLAYWRIGHT_MAX_PAGES_PER_CONTEXT = 8  # ADDED - reuse tabs
+# How many tabs each context can open before rotating to a new one
+
+# Optional: block unnecessary resources (images, fonts, ads) to speed up
+PLAYWRIGHT_PROCESS_REQUEST_HEADERS = None  # ADDED
+# Keeps original request headers (don’t override them)
+
+PLAYWRIGHT_ABORT_REQUEST = lambda req: req.resource_type in [  # ADDED
+    "image", "media", "font", "stylesheet", "other"
+]
+# Prevents Playwright from downloading unnecessary resources
+# This makes scraping faster by skipping images, ads, fonts, videos, etc.
+
+# Crawl responsibly
+#USER_AGENT = "carcompare (+http://www.yourdomain.com)"
+# (Optional) Set a custom User-Agent to identify your scraper
 
 
 
@@ -37,8 +66,8 @@ PLAYWRIGHT_BROWSER_TYPE = "chromium"
 ROBOTSTXT_OBEY = True
 
 # Concurrency and throttling settings
-CONCURRENT_REQUESTS = 24
-CONCURRENT_REQUESTS_PER_DOMAIN = 6
+CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS_PER_DOMAIN = 8
 DOWNLOAD_DELAY = 0.15
 
 # Disable cookies (enabled by default)
@@ -86,7 +115,7 @@ AUTOTHROTTLE_START_DELAY = 0.1
 AUTOTHROTTLE_MAX_DELAY = 1.0
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-AUTOTHROTTLE_TARGET_CONCURRENCY = 4.0
+AUTOTHROTTLE_TARGET_CONCURRENCY = 6.0
 # Enable showing throttling stats for every response received:
 AUTOTHROTTLE_DEBUG = False
 
