@@ -14,6 +14,10 @@ class AutoplusSpider(scrapy.Spider):
             yield response.follow(brand, callback=self.parse_brands,meta={'playwright' : True})
 
     def parse_brands(self, response):
+        if (response.xpath('name(//*[@id="tUtilitaire"]/*[1])').get()) == 'h4':
+            car_uts = response.xpath('//*[@id="searchbymodels_module"]/div[3]/div[3]/div/div[1]/div[2]/a/@href').getall()
+            for car_ut in car_uts :
+                yield response.follow(car_ut,callback=self.parse_models,meta={'playwright' : True})
         car_models = response.xpath('//*[@id="searchbymodels_module"]/div[3]/div[1]/div[@class="model_listbox"]/div[@class="content"]/a/@href').getall()
         for model in car_models:
             yield response.follow(model, callback=self.parse_models,meta={'playwright' : True})
