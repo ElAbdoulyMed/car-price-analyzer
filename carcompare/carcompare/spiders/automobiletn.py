@@ -33,7 +33,7 @@ class AutomobileTnSpider(scrapy.Spider):
             nb_cylinders = response.xpath('//th[text()="Nombre de cylindres"]/following-sibling::*[1]/text()').get()
             capacity = response.xpath('//th[text()="Cylindrée"]/following-sibling::*[1]/text()').get()
             power=response.xpath('//th[text()="Puissance (ch.din)"]/following-sibling::*[1]/text()').get()
-            gear=response.xpath('//th[text()="Boîte"]/following-sibling::*[1]/text()').get().strip()
+            gear=response.xpath('//th[text()="Boîte"]/following-sibling::*[1]/text()').get()
             battery=response.xpath('//th[text()="Batterie"]/following-sibling::*[1]/text()').get()
             doors = response.xpath('//th[text()="Nombre de portes"]/following-sibling::*[1]/text()').get()
             body_type = response.xpath('//th[text()="Carrosserie"]/following-sibling::*[1]/text()').get()
