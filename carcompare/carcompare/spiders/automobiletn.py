@@ -26,12 +26,29 @@ class AutomobileTnSpider(scrapy.Spider):
         if (response.xpath('name(//*[@id="detail_content"]/div[1]/*[2])').extract_first()!='table'):
             cars_names_list = response.css('h3.page-title')
             #car_price=response.meta.get('price')
-            car_price = response.xpath('//*[@id="detail_content"]/div[1]/div[2]/div/span/text()').extract_first().strip()
+            car_price = response.xpath('//*[@id="detail_content"]/div[1]/div[2]/div/span/text()').extract_first()
             for car_name in cars_names_list:
-                car_full_name = " ".join(car_name.css('*::text').getall()).strip()
+                car_full_name = " ".join(car_name.css('*::text').getall())
+            fuel_type = response.xpath('//th[text()="Energie "]/following-sibling::*[1]/text()').get()
+            nb_cylinders = response.xpath('//th[text()="Nombre de cylindres"]/following-sibling::*[1]/text()').get()
+            capacity = response.xpath('//th[text()="Cylindrée"]/following-sibling::*[1]/text()').get()
+            power=response.xpath('//th[text()="Puissance (ch.din)"]/following-sibling::*[1]/text()').get()
+            gear=response.xpath('//th[text()="Boîte"]/following-sibling::*[1]/text()').get()
+            battery=response.xpath('//th[text()="Batterie"]/following-sibling::*[1]/text()').get()
+            doors = response.xpath('//th[text()="Nombre de portes"]/following-sibling::*[1]/text()').get()
+            body_type = response.xpath('//th[text()="Carrosserie"]/following-sibling::*[1]/text()').get()
+            print("DEBUG:", car_full_name, car_price, fuel_type)
             yield{  
                 "name": car_full_name,
-                "price":car_price
+                "price":car_price,
+                "energy":fuel_type,
+                "cylinder_count":nb_cylinders,
+                "capacity_(CC)":capacity,
+                "power_(HP)":power,
+                "gearbox":gear,
+                "battery_(KWh)":battery,
+                "door_count":doors,
+                "body_type":body_type
             }
         else:
             cars_versions_list = response.xpath('//*[@id="detail_content"]/div[1]/table/tbody/tr/td[1]/a/@href').extract()
