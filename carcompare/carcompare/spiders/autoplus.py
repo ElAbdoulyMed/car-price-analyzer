@@ -25,16 +25,37 @@ class AutoplusSpider(scrapy.Spider):
     def parse_models(self, response):
         car_versions = response.xpath('//*[@id="searchbytrims_module"]/div[3]/div[3]/div[4]/div[2]/div[@class="fini_item"]/div[@class="infocont"]/a/@href').getall()
         for version in car_versions:
-            yield response.follow(version, callback=self.get_names,meta={'playwright' : True})
+            yield response.follow(version, callback=self.get_info,meta={'playwright' : True})
 
-    def get_names(self, response):
+    def get_info(self, response):
         car_names = response.xpath('//*[@id="marq_header_wrapper"]/div[1]/span[@class="label"]/text()').get()
         car_subname = response.xpath('//*[@id="marq_header_wrapper"]/div[1]/span/h5/text()').get()
-        
         name = car_names if car_names else ""
         subname = car_subname if car_subname else ""
+        
+        car_energie = response.xpath('//li[span/b[text()="Energie "]]/*[2]/text()').get()            
+        car_prices = response.xpath('//*[@id="searchbytrims_module"]/div[3]/div[2]/div[2]/b/text()').get()
+        car_cylindre = response.xpath('//li[span/b[text()="Cylindrée"]]/*[2]/text()').get()
+        car_nb_cylindre = response.xpath('//li[span/b[text()="Nombre de cylindres"]]/*[2]/text()').get()
+        car_puiss = response.xpath('//li[span/b[text()="Puissance (ch.din)"]]/*[2]/text()').get()
+        car_boite = response.xpath('//li[span/b[text()="Boîte"]]/*[2]/text()').get()
+        car_batterie = response.xpath('//li[span/b[text()="Batterie"]]/*[2]/text()').get()
+        car_portes = response.xpath('//li[span/b[text()="Nombre de portes"]]/*[2]/text()').get()
+        car_caros = response.xpath('//li[span/b[text()="Carrosserie"]]/*[2]/text()').get()
+        
         yield {
-            "name": (name + " " + subname).strip()
+            "name": (name + " " + subname).strip(),
+            "price" : (car_prices),
+            "energy" : (car_energie),
+            "cylinder_count" : (car_nb_cylindre),
+            "capacity_(CC)" : (car_cylindre[:-4] if car_cylindre else None),
+            "power_(HP)" : (car_puiss),
+            "gearbox" : (car_boite),
+            "battery_(kWh)" : (car_batterie),
+            "door_count" : (car_portes),
+            "body_type" : (car_caros)
         }
+                
+    
 
 
