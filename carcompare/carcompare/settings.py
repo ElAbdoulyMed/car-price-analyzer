@@ -11,15 +11,15 @@ from dotenv import load_dotenv
 load_dotenv()
 BOT_NAME = "carcompare"
 
-SPIDER_MODULES = ["carcompare.spiders"]
-NEWSPIDER_MODULE = "carcompare.spiders"
+SPIDER_MODULES = ["carcompare.carcompare.spiders"]
+NEWSPIDER_MODULE = "carcompare.carcompare.spiders"
 
 ADDONS = {}
 
 MONGO_URI = os.getenv("MONGO_URI")
 MONGO_DATABASE = os.getenv("MONGO_DATABASE")
 ITEM_PIPELINES = {
-    "carcompare.pipelines.MongoDBPipeline": 300,
+    "carcompare.carcompare.pipelines.MongoDBPipeline": 300,
 }
 DOWNLOAD_HANDLERS = {
     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
