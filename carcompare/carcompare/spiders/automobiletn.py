@@ -1,5 +1,5 @@
 import scrapy
-
+from transformation.normalization.cars import normalize_name
 class AutomobileTnSpider(scrapy.Spider):
     name="automobiletn"
     collection_to_use = "cars"
@@ -9,19 +9,19 @@ class AutomobileTnSpider(scrapy.Spider):
         
     def parse(self,response) :
         brands_list=response.css("div.brands-list>a::attr(href)").extract()
-        for brand in brands_list : 
-            print(brand)
+        for brand in brands_list :
+            brand_name = normalize_name(brand.split('/')[-1])
+            yield {
+                "collection":"manufacturers",
+                "name":brand_name
+            }
             yield response.follow(brand,callback=self.parse_brand)
             
     def parse_brand(self,response):
         cars_list=response.xpath('//div[@class="articles"]/span/div/a/@href').extract()
-        #car_price = response.xpath('//*[@id="w1"]/div[4]/span[1]/div/a/div/span/text()').extract_first().strip()
         for car in cars_list:
-            yield response.follow(car,
-                                  callback=self.parse_car,
-                                  #meta={'price':car_price}
-                        )
-                 
+            yield response.follow(car, callback=self.parse_car)
+
     def parse_car(self,response):
         if (response.xpath('name(//*[@id="detail_content"]/div[1]/*[2])').extract_first()!='table'):
             cars_names_list = response.css('h3.page-title')
@@ -37,8 +37,8 @@ class AutomobileTnSpider(scrapy.Spider):
             battery=response.xpath('//th[text()="Batterie"]/following-sibling::*[1]/text()').get()
             doors = response.xpath('//th[text()="Nombre de portes"]/following-sibling::*[1]/text()').get()
             body_type = response.xpath('//th[text()="Carrosserie"]/following-sibling::*[1]/text()').get()
-            print("DEBUG:", car_full_name, car_price, fuel_type)
-            yield{  
+            yield{
+                "collection" : "cars",
                 "name": car_full_name,
                 "price":car_price,
                 "energy":fuel_type,
