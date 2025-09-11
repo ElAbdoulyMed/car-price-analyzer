@@ -37,7 +37,7 @@ class AutoplusSpider(scrapy.Spider):
         car_subname = response.xpath('//*[@id="marq_header_wrapper"]/div[1]/span/h5/text()').get()
         name = car_names if car_names else ""
         subname = car_subname if car_subname else ""
-        
+        car_brand = response.xpath('//*[@id="breadcrumb"]/li[3]/a/text()').extract_first()
         car_energie = response.xpath('//li[span/b[text()="Energie "]]/*[2]/text()').get()            
         car_prices = response.xpath('//*[@id="searchbytrims_module"]/div[3]/div[2]/div[2]/b/text()').get()
         car_cylindre = response.xpath('//li[span/b[text()="Cylindrée"]]/*[2]/text()').get()
@@ -50,6 +50,8 @@ class AutoplusSpider(scrapy.Spider):
         
         yield {
             "collection" : "cars",
+            "manufacturer_id" : normalize_name(car_brand),
+            "manufacturer_name" : normalize_name(car_brand),
             "name": (name + " " + subname).strip(),
             "price" : (car_prices),
             "energy" : (car_energie),
