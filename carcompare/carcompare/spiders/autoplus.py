@@ -1,5 +1,5 @@
 import scrapy
-
+from transformation.normalization.cars import normalize_name
 class AutoplusSpider(scrapy.Spider):
     name = "autoplus"
     collection_to_use = "cars"
@@ -11,7 +11,12 @@ class AutoplusSpider(scrapy.Spider):
     def parse(self, response):
         car_brands = response.xpath('//*[@id="searchbymakes_module"]/div[2]/div/div[@class="marq_listbox"]/div/a/@href').getall()
         for brand in car_brands:
+            car_name = normalize_name(brand.split('/')[-1])
             yield response.follow(brand, callback=self.parse_brands,meta={'playwright' : True})
+            yield{
+                "collection" : "manufacturers",
+                "name" : car_name
+            }
 
     def parse_brands(self, response):
         if (response.xpath('name(//*[@id="tUtilitaire"]/*[1])').get()) == 'h4':
@@ -44,6 +49,7 @@ class AutoplusSpider(scrapy.Spider):
         car_caros = response.xpath('//li[span/b[text()="Carrosserie"]]/*[2]/text()').get()
         
         yield {
+            "collection" : "cars",
             "name": (name + " " + subname).strip(),
             "price" : (car_prices),
             "energy" : (car_energie),
