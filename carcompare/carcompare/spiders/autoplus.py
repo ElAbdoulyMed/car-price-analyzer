@@ -52,6 +52,7 @@ class AutoplusSpider(scrapy.Spider):
             "collection" : "cars",
             "manufacturer_id" : normalize_name(car_brand),
             "manufacturer_name" : normalize_name(car_brand),
+            "seller_name" : self.name,
             "name": (name + " " + subname).strip(),
             "price" : (car_prices),
             "energy" : (car_energie),

@@ -41,6 +41,7 @@ class AutomobileTnSpider(scrapy.Spider):
                 "collection" : "cars",
                 "manufacturer_id" : normalize_name(brand),
                 "manufacturer_name" :normalize_name(brand),
+                "seller_name" : self.name,
                 "name": car_full_name,
                 "price":car_price,
                 "energy":fuel_type,
