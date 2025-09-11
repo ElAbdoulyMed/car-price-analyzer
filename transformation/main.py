@@ -1,5 +1,6 @@
 import pymongo
 from relations.assign_manufacturer_id import assign_manufacturer_id
+from relations.assign_seller_id import assign_seller_id
 import os
 from dotenv import load_dotenv
 
@@ -11,7 +12,7 @@ def main():
     db = client[MONGO_DATABASE]
     #Calling the transformation functions
     assign_manufacturer_id(db)
-
+    assign_seller_id(db)
     #Closing the database connection
     client.close()
 
