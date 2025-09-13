@@ -71,7 +71,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 8
 DOWNLOAD_DELAY = 0.15
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = True
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False

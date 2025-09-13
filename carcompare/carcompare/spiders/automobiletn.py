@@ -8,13 +8,7 @@ class AutomobileTnSpider(scrapy.Spider):
     collection_to_use = "cars"
     def start_requests(self):
         start_url= "https://www.automobile.tn/fr/neuf"
-        yield scrapy.Request(url=start_url,callback=self.parse, meta={
-            "playwright": True,
-            "playwright_page_methods": [
-                PageMethod("wait_for_selector", "div.brands-list"),
-                PageMethod("wait_for_load_state", "networkidle")
-            ]
-        })
+        yield scrapy.Request(url=start_url,callback=self.parse)
         
     def parse(self,response) :
         brands_list=response.css("div.brands-list>a::attr(href)").extract()
@@ -24,13 +18,7 @@ class AutomobileTnSpider(scrapy.Spider):
                 "collection":"manufacturers",
                 "name":brand_name
             }
-            yield response.follow(brand,callback=self.parse_brand, meta={
-            "playwright": True,
-            "playwright_page_methods": [
-                PageMethod("wait_for_selector", "div.articles"),
-                PageMethod("wait_for_load_state", "networkidle")
-            ]
-        })
+            yield response.follow(brand,callback=self.parse_brand)
             
     def parse_brand(self,response):
         cars_list=response.xpath('//div[@class="articles"]/span/div/a/@href').extract()
