@@ -1,11 +1,20 @@
+from cherrypy import response
 import scrapy
 from transformation.normalization.cars import normalize_name
+from scrapy_playwright.page import PageMethod
+
 class AutomobileTnSpider(scrapy.Spider):
     name="automobiletn"
     collection_to_use = "cars"
     def start_requests(self):
         start_url= "https://www.automobile.tn/fr/neuf"
-        yield scrapy.Request(url=start_url,callback=self.parse)
+        yield scrapy.Request(url=start_url,callback=self.parse, meta={
+            "playwright": True,
+            "playwright_page_methods": [
+                PageMethod("wait_for_selector", "div.brands-list"),
+                PageMethod("wait_for_load_state", "networkidle")
+            ]
+        })
         
     def parse(self,response) :
         brands_list=response.css("div.brands-list>a::attr(href)").extract()
@@ -15,15 +24,27 @@ class AutomobileTnSpider(scrapy.Spider):
                 "collection":"manufacturers",
                 "name":brand_name
             }
-            yield response.follow(brand,callback=self.parse_brand)
+            yield response.follow(brand,callback=self.parse_brand, meta={
+            "playwright": True,
+            "playwright_page_methods": [
+                PageMethod("wait_for_selector", "div.articles"),
+                PageMethod("wait_for_load_state", "networkidle")
+            ]
+        })
             
     def parse_brand(self,response):
         cars_list=response.xpath('//div[@class="articles"]/span/div/a/@href').extract()
         for car in cars_list:
-            yield response.follow(car, callback=self.parse_car)
+            yield response.follow(car, callback=self.parse_car, meta={
+            "playwright": True,
+            "playwright_page_methods": [
+                PageMethod("wait_for_selector", "#content_container"),
+                PageMethod("wait_for_load_state", "networkidle") 
+            ]
+        })
 
     def parse_car(self,response):
-        if (response.xpath('name(//*[@id="detail_content"]/div[1]/*[2])').extract_first()!='table'):
+        if (response.xpath('name(//*[@id="detail_content"]/div[1]/*[2])').extract_first()!='table'):            
             cars_names_list = response.css('h3.page-title')
             car_price = response.xpath('//*[@id="detail_content"]/div[1]/div[2]/div/span/text()').extract_first()
             for car_name in cars_names_list:
@@ -37,6 +58,7 @@ class AutomobileTnSpider(scrapy.Spider):
             battery=response.xpath('//th[text()="Batterie"]/following-sibling::*[1]/text()').get()
             doors = response.xpath('//th[text()="Nombre de portes"]/following-sibling::*[1]/text()').get()
             body_type = response.xpath('//th[text()="Carrosserie"]/following-sibling::*[1]/text()').get()
+            print("DEBUG :",car_full_name,car_price,brand,fuel_type,nb_cylinders,capacity,power,gear,battery,doors,body_type)
             yield{
                 "collection" : "cars",
                 "manufacturer_id" : normalize_name(brand),
@@ -56,6 +78,12 @@ class AutomobileTnSpider(scrapy.Spider):
         else:
             cars_versions_list = response.xpath('//*[@id="detail_content"]/div[1]/table/tbody/tr/td[1]/a/@href').extract()
             for car_version in cars_versions_list:
-                yield response.follow(car_version,callback=self.parse_car)
+                yield response.follow(car_version,callback=self.parse_car, meta={
+            "playwright": True,
+            "playwright_page_methods": [
+                PageMethod("wait_for_selector", "#content_container"),
+                PageMethod("wait_for_load_state", "networkidle")
+            ]
+        })
 
 
