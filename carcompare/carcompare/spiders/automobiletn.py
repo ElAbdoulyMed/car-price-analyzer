@@ -18,7 +18,7 @@ class AutomobileTnSpider(scrapy.Spider):
                 "collection":"manufacturers",
                 "name":brand_name
             }
-            yield response.follow(brand,callback=self.parse_brand)
+            yield response.follow(brand,callback=self.parse_brand,meta={"playwright": True,})
             
     def parse_brand(self,response):
         cars_list=response.xpath('//div[@class="articles"]/span/div/a/@href').extract()
@@ -32,7 +32,7 @@ class AutomobileTnSpider(scrapy.Spider):
         })
 
     def parse_car(self,response):
-        if (response.xpath('name(//*[@id="detail_content"]/div[1]/*[2])').extract_first()!='table'):            
+        if (response.xpath('name(//*[@id="detail_content"]/div[1]/*[2])').extract_first()!='table'):         
             cars_names_list = response.css('h3.page-title')
             car_price = response.xpath('//*[@id="detail_content"]/div[1]/div[2]/div/span/text()').extract_first()
             for car_name in cars_names_list:
@@ -46,7 +46,6 @@ class AutomobileTnSpider(scrapy.Spider):
             battery=response.xpath('//th[text()="Batterie"]/following-sibling::*[1]/text()').get()
             doors = response.xpath('//th[text()="Nombre de portes"]/following-sibling::*[1]/text()').get()
             body_type = response.xpath('//th[text()="Carrosserie"]/following-sibling::*[1]/text()').get()
-            print("DEBUG :",car_full_name,car_price,brand,fuel_type,nb_cylinders,capacity,power,gear,battery,doors,body_type)
             yield{
                 "collection" : "cars",
                 "manufacturer_id" : normalize_name(brand),
