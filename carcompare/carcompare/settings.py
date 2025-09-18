@@ -28,7 +28,7 @@ DOWNLOAD_HANDLERS = {
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 PLAYWRIGHT_BROWSER_TYPE = "chromium"
 PLAYWRIGHT_LAUNCH_OPTIONS = {   # ADDED
-    "headless": True,           # Run browser without a GUI (faster, less memory)
+    "headless": False,           # Run browser without a GUI (faster, less memory)
     "timeout": 30 * 1000,       # Max time (ms) to start the browser = 30s
 }
 # Configures how the Playwright browser is launched
@@ -71,7 +71,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 8
 DOWNLOAD_DELAY = 0.15
 
 # Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
+COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 #TELNETCONSOLE_ENABLED = False
