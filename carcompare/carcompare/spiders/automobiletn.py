@@ -27,7 +27,18 @@ class AutomobileTnSpider(scrapy.Spider):
             "playwright": True,
             "playwright_page_methods": [
                 PageMethod("wait_for_selector", "#content_container"),
-                PageMethod("wait_for_load_state", "networkidle") 
+                PageMethod("wait_for_load_state", "networkidle") ,
+
+                PageMethod("evaluate", """
+                    async () => {
+                        let previousHeight = 0;
+                        while (document.body.scrollHeight > previousHeight) {
+                            previousHeight = document.body.scrollHeight;
+                            window.scrollTo(0, previousHeight);
+                            await new Promise(r => setTimeout(r, 1500)); // wait 1.5s for new batch
+                        }
+                    }
+                """)
             ]
         })
 
@@ -69,7 +80,17 @@ class AutomobileTnSpider(scrapy.Spider):
             "playwright": True,
             "playwright_page_methods": [
                 PageMethod("wait_for_selector", "#content_container"),
-                PageMethod("wait_for_load_state", "networkidle")
+                PageMethod("wait_for_load_state", "networkidle"),
+                PageMethod("evaluate", """
+                    async () => {
+                        let previousHeight = 0;
+                        while (document.body.scrollHeight > previousHeight) {
+                            previousHeight = document.body.scrollHeight;
+                            window.scrollTo(0, previousHeight);
+                            await new Promise(r => setTimeout(r, 1500)); // wait 1.5s for new batch
+                        }
+                    }
+                """)
             ]
         })
 
