@@ -48,6 +48,7 @@ class AutomobileTnSpider(scrapy.Spider):
             car_price = response.xpath('//*[@id="detail_content"]/div[1]/div[2]/div/span/text()').extract_first()
             for car_name in cars_names_list:
                 car_full_name = " ".join(car_name.css('*::text').getall())
+            url = response.url
             brand = response.xpath('//*[@id="content_container"]/div[3]/ul/li[2]/a/text()').extract_first()
             fuel_type = response.xpath('//th[text()="Energie "]/following-sibling::*[1]/text()').get()
             nb_cylinders = response.xpath('//th[text()="Nombre de cylindres"]/following-sibling::*[1]/text()').get()
@@ -57,10 +58,12 @@ class AutomobileTnSpider(scrapy.Spider):
             battery=response.xpath('//th[text()="Batterie"]/following-sibling::*[1]/text()').get()
             doors = response.xpath('//th[text()="Nombre de portes"]/following-sibling::*[1]/text()').get()
             body_type = response.xpath('//th[text()="Carrosserie"]/following-sibling::*[1]/text()').get()
+            print("DEBUG : ",url)
             yield{
                 "collection" : "cars",
                 "manufacturer_id" : normalize_name(brand),
                 "manufacturer_name" :normalize_name(brand),
+                "url" : url,
                 "seller_name" : self.name,
                 "name": car_full_name,
                 "price":car_price,
