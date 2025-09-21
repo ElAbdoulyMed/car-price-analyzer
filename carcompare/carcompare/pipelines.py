@@ -8,6 +8,8 @@
 from itemadapter import ItemAdapter
 from transformation.normalization.cars import normalize_name
 import pymongo
+from datetime import datetime
+
 
 class MongoDBPipeline:
     def __init__(self, mongo_uri, mongo_db, batch_size=50):
@@ -46,6 +48,13 @@ class MongoDBPipeline:
         if collection_name == "manufacturers":
             if self.db[collection_name].find_one({"name":normalize_name(items_to_store["name"])}):
                 return item
+        else:
+            if self.db[collection_name].find_one({"url":items_to_store["url"]}):
+                collection_name = "price_history"
+                items_to_store = {"price":items_to_store["price"],"timestamp":datetime.utcnow()}
+            else:
+                self.buffers["price_history"].append(dict(price=items_to_store["price"],timestamp=datetime.utcnow()))
+                items_to_store.pop("price",None)
         if collection_name not in self.buffers:
             self.buffers[collection_name] = []
         
