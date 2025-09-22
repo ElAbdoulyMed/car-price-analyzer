@@ -9,6 +9,7 @@ from itemadapter import ItemAdapter
 from transformation.normalization.cars import normalize_name
 import pymongo
 from datetime import datetime
+from bson import ObjectId
 
 
 class MongoDBPipeline:
@@ -56,10 +57,12 @@ class MongoDBPipeline:
                 items_to_store = {"url":items_to_store["url"],"price":items_to_store["price"],"car_id":result["_id"],"timestamp":datetime.utcnow()}
                 collection_to_item["price_history"]=items_to_store
             else:
-                items_to_store_in_price_history = {"url":items_to_store["url"],"price":items_to_store["price"],"timestamp":datetime.utcnow()}
-                collection_to_item["price_history"]=items_to_store_in_price_history
+                new_id = ObjectId()
+                items_to_store_in_price_history = {"url":items_to_store["url"],"price":items_to_store["price"],"car_id":new_id,"timestamp":datetime.utcnow()}
                 items_to_store.pop("price",None)
+                items_to_store["_id"]=new_id
                 collection_to_item[collection_name] = items_to_store
+                collection_to_item["price_history"]=items_to_store_in_price_history
                 
         for collection , data in collection_to_item.items():
             if collection not in self.buffers:
