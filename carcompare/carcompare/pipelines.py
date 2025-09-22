@@ -40,7 +40,7 @@ class MongoDBPipeline:
 
     def process_item(self, item, spider):
         collection_name = item.get("collection") or spider.collection_to_use
-        
+        collection_to_item = {}
         #copy item without "collection" field
         items_to_store = dict(item)
         items_to_store.pop("collection",None)
@@ -48,19 +48,27 @@ class MongoDBPipeline:
         if collection_name == "manufacturers":
             if self.db[collection_name].find_one({"name":normalize_name(items_to_store["name"])}):
                 return item
-        else:
-            if self.db[collection_name].find_one({"url":items_to_store["url"]}):
-                collection_name = "price_history"
-                items_to_store = {"price":items_to_store["price"],"timestamp":datetime.utcnow()}
             else:
-                self.buffers["price_history"].append(dict(price=items_to_store["price"],timestamp=datetime.utcnow()))
+                collection_to_item[collection_name] = items_to_store
+        else:
+            result = self.db[collection_name].find_one({"url":items_to_store["url"]},{"_id":1})
+            if result:
+                items_to_store = {"url":items_to_store["url"],"price":items_to_store["price"],"car_id":result["_id"],"timestamp":datetime.utcnow()}
+                collection_to_item["price_history"]=items_to_store
+            else:
+                items_to_store_in_price_history = {"url":items_to_store["url"],"price":items_to_store["price"],"timestamp":datetime.utcnow()}
+                collection_to_item["price_history"]=items_to_store_in_price_history
                 items_to_store.pop("price",None)
-        if collection_name not in self.buffers:
-            self.buffers[collection_name] = []
-        
-        self.buffers[collection_name].append(dict(items_to_store)) 
-        
-        if len(self.buffers[collection_name]) >= self.batch_size:
-            self.db[collection_name].insert_many(self.buffers[collection_name])
-            self.buffers[collection_name] = []
+                collection_to_item[collection_name] = items_to_store
+                
+        for collection , data in collection_to_item.items():
+            if collection not in self.buffers:
+                self.buffers[collection] = []
+
+            self.buffers[collection].append(dict(data))
+            
+        for collection in self.buffers:
+            if len(self.buffers[collection]) >= self.batch_size:
+                self.db[collection].insert_many(self.buffers[collection])
+                self.buffers[collection] = []
         return item
